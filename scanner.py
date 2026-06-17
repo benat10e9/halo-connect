@@ -38,35 +38,43 @@ class WiFiScanner:
 
     def _get_current_ap_rssi(self) -> Optional[dict]:
         """
-        Read current WiFi connection details via airport -I.
-        Returns RSSI of connected AP without needing location permission.
+        Read WiFi RSSI via wdutil (Sequoia) or system_profiler fallback.
+        wdutil requires sudo -n (passwordless sudo already granted this session).
         """
+        # Method 1: wdutil (works on Sequoia, needs sudo)
         try:
             result = subprocess.run(
-                [AIRPORT, "-I"],
-                capture_output=True, text=True, timeout=5
+                ['sudo', '-n', 'wdutil', 'info'],
+                capture_output=True, text=True, timeout=8
             )
-            info = {}
-            for line in result.stdout.split('\n'):
-                if ':' in line:
-                    parts = line.strip().split(':', 1)
-                    if len(parts) == 2:
-                        key = parts[0].strip()
-                        val = parts[1].strip()
-                        info[key] = val
+            if result.returncode == 0 and 'RSSI' in result.stdout:
+                rssi_m = re.search(r'RSSI\s*:\s*(-\d+)', result.stdout)
+                if rssi_m:
+                    # Also try to get BSSID (may be redacted)
+                    bssid_m = re.search(r'BSSID\s*:\s*(\S+)', result.stdout)
+                    bssid = bssid_m.group(1) if bssid_m else 'orbi'
+                    return {
+                        'rssi':  int(rssi_m.group(1)),
+                        'bssid': bssid.lower(),
+                        'ssid':  self.orbi_ssid
+                    }
+        except Exception:
+            pass
 
-            rssi  = info.get('agrCtlRSSI') or info.get('RSSI')
-            bssid = info.get('BSSID') or info.get('bssid')
-            ssid  = info.get('SSID') or info.get(' SSID')
+        # Method 2: system_profiler (no sudo, slower, less reliable)
+        try:
+            result = subprocess.run(
+                ['system_profiler', 'SPAirPortDataType'],
+                capture_output=True, text=True, timeout=15
+            )
+            rssi_m = re.search(r'Signal\s*/\s*Noise.*?(-\d+)\s*dBm', result.stdout, re.I)
+            if not rssi_m:
+                rssi_m = re.search(r'RSSI\s*:\s*(-\d+)', result.stdout)
+            if rssi_m:
+                return {'rssi': int(rssi_m.group(1)), 'bssid': 'orbi', 'ssid': self.orbi_ssid}
+        except Exception:
+            pass
 
-            if rssi and bssid:
-                return {
-                    'rssi':  int(rssi),
-                    'bssid': bssid.lower(),
-                    'ssid':  ssid or ''
-                }
-        except Exception as e:
-            print(f"[scanner] airport -I error: {e}")
         return None
 
     def _identify_node(self, bssid: str) -> Optional[str]:
