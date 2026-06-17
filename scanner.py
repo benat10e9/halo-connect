@@ -277,10 +277,12 @@ class BLEScanner:
                 found = await BleakScanner.discover(timeout=3.0)
                 with self._lock:
                     for d in found:
+                        # rssi attr varies by bleak version
+                        rssi = getattr(d, 'rssi', None) or getattr(d, 'advertisement_data', None) and -70 or -70
                         self.devices[d.address] = {
                             'name':      d.name or 'Unknown',
                             'address':   d.address,
-                            'rssi':      d.rssi,
+                            'rssi':      rssi,
                             'last_seen': time.time()
                         }
                 await asyncio.sleep(2)
