@@ -183,8 +183,15 @@ class HaloConnectAgent:
                 )
 
                 # Zone and floor detection
-                zone, zone_conf = detect_zone(node_rssi)
-                floor, floor_conf = detect_floor(node_rssi)
+                # Use fixed zone from config if set (BSSID redacted by wdutil)
+                if self.config.get('fixed_zone'):
+                    zone       = self.config['fixed_zone']
+                    zone_conf  = 1.0
+                    floor      = self.config.get('fixed_floor', 'ground')
+                    floor_conf = 1.0
+                else:
+                    zone, zone_conf = detect_zone(node_rssi)
+                    floor, floor_conf = detect_floor(node_rssi)
 
                 # Motion state
                 if not final_presence:

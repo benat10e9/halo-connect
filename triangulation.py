@@ -17,8 +17,8 @@ from typing import Dict, Optional, Tuple
 
 NODE_POSITIONS = {
     'node_1_up_left':    (0.10, 0.85, 1.0),   # upstairs far end/left wing
-    'node_2_up_center':  (0.45, 0.55, 1.0),   # upstairs center
-    'node_3_down_right': (0.80, 0.30, 0.0),   # downstairs right/first floor
+    'node_2_up_center':  (0.45, 0.55, 1.0),   # upstairs center (base unit)
+    'node_3_down_right': (0.80, 0.30, 0.0),   # downstairs / Sara's office
 }
 
 # Human-readable zone names keyed to floor plan
