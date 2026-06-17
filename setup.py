@@ -53,6 +53,13 @@ def scan_wifi() -> list:
         return []
 
 
+# Ben's Orbi 770 known BSSIDs
+KNOWN_ORBI_NODES = [
+    {'bssid': '94:18:65:f6:ff:4f', 'rssi': -60, 'ssid': '', 'label': 'Upstairs far end'},
+    {'bssid': '94:18:65:f7:3a:5f', 'rssi': -55, 'ssid': '', 'label': 'Upstairs center'},
+    {'bssid': '94:18:65:f7:ec:26', 'rssi': -65, 'ssid': '', 'label': 'Downstairs'},
+]
+
 def find_orbi_nodes(networks: list, ssid: str) -> list:
     """Find all BSSIDs belonging to the Orbi network (same SSID, different BSSIDs = different nodes)."""
     orbi_nets = [n for n in networks if n['ssid'].lower() == ssid.lower()]

@@ -1,0 +1,7 @@
+{
+  "node_bssids": {
+    "node_1_up_left":    "94:18:65:f6",
+    "node_2_up_center":  "94:18:65:f7:3a",
+    "node_3_down_right": "94:18:65:f7:ec"
+  }
+}
