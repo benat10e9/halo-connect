@@ -28,8 +28,8 @@ from baseline      import BaselineDetector
 CONFIG_PATH = os.path.expanduser("~/.halo-connect/config.json")
 
 # ── Presence detection thresholds ─────────────────────────────────────────
-PRESENCE_VARIANCE_THRESHOLD = 0.8   # single AP variance threshold
-MOTION_VARIANCE_THRESHOLD   = 2.5   # above this = active movement
+PRESENCE_VARIANCE_THRESHOLD = 0.5   # single AP variance threshold
+MOTION_VARIANCE_THRESHOLD   = 1.5   # above this = active movement
 SCAN_INTERVAL_SEC           = 3     # how often to scan (seconds)
 PUBLISH_INTERVAL_SEC        = 5     # how often to publish to server
 
