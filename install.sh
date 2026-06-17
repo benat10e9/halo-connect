@@ -1,6 +1,5 @@
 #!/bin/bash
 # Halo Connect installer for macOS
-# Installs Python dependencies and sets up the agent
 
 set -e
 
@@ -14,19 +13,32 @@ if ! command -v python3 &>/dev/null; then
     exit 1
 fi
 
-PYTHON_VER=$(python3 -c "import sys; print(sys.version_info.minor)")
-if [ "$PYTHON_VER" -lt "10" ]; then
-    echo "  Python 3.10+ required. Current: 3.$PYTHON_VER"
-    exit 1
-fi
+# Create virtual environment inside the project
+python3 -m venv .venv
+source .venv/bin/activate
 
-# Install dependencies
 echo "  Installing dependencies..."
-pip3 install paho-mqtt bleak rumps requests --quiet
+pip install --quiet paho-mqtt bleak rumps requests
+
+# Create launcher scripts that use the venv
+cat > run.sh << 'LAUNCHER'
+#!/bin/bash
+cd "$(dirname "$0")"
+source .venv/bin/activate
+python3 run.py "$@"
+LAUNCHER
+chmod +x run.sh
+
+cat > setup.sh << 'LAUNCHER'
+#!/bin/bash
+cd "$(dirname "$0")"
+source .venv/bin/activate
+python3 setup.py "$@"
+LAUNCHER
+chmod +x setup.sh
 
 echo ""
-echo "  ✓ Dependencies installed"
+echo "  ✓ Done. Now run:"
 echo ""
-echo "  Run setup:"
-echo "    python3 setup.py"
+echo "    ./setup.sh"
 echo ""
