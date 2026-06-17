@@ -28,8 +28,8 @@ from baseline      import BaselineDetector
 CONFIG_PATH = os.path.expanduser("~/.halo-connect/config.json")
 
 # ── Presence detection thresholds ─────────────────────────────────────────
-PRESENCE_VARIANCE_THRESHOLD = 3.0   # RSSI variance above this = someone present
-MOTION_VARIANCE_THRESHOLD   = 8.0   # above this = active movement
+PRESENCE_VARIANCE_THRESHOLD = 0.8   # single AP variance threshold
+MOTION_VARIANCE_THRESHOLD   = 2.5   # above this = active movement
 SCAN_INTERVAL_SEC           = 3     # how often to scan (seconds)
 PUBLISH_INTERVAL_SEC        = 5     # how often to publish to server
 
@@ -240,7 +240,7 @@ class HaloConnectAgent:
                 self.scan_count += 1
 
                 # Print status every 10 scans
-                if self.scan_count % 10 == 0:
+                if self.scan_count % 5 == 0:
                     status = "PRESENT" if final_presence else "CLEAR"
                     print(f"[{datetime.now().strftime('%H:%M:%S')}] {status} | "
                           f"Zone: {zone} ({floor}) | "
