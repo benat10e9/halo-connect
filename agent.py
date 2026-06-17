@@ -241,6 +241,23 @@ class HaloConnectAgent:
                     'anomaly':       is_anomaly,
                     'anomaly_desc':  anomaly_desc if is_anomaly else None,
                     'anomaly_severity': round(anomaly_severity, 2) if is_anomaly else 0,
+
+                    # Named device list
+                    'devices_list': [
+                        {
+                            'name': d['name'],
+                            'mac':  d['mac'],
+                            'type': 'mobile' if d['is_mobile'] else 'fixed',
+                            'ip':   d.get('ip', '')
+                        }
+                        for d in self.device_tracker.get_present_devices()
+                        if d['name'] not in ('?', 'mdns.mcast.net')
+                    ],
+                    'ble_list': [
+                        {'name': d['name'], 'address': d['address']}
+                        for d in self.ble_scanner.get_present()
+                        if d['name'] != 'Unknown BLE'
+                    ],
                 }
 
                 self.last_event = event
